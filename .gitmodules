@@ -1,0 +1,3 @@
+[submodule "gitops-config"]
+	path = gitops-config
+	url = git@github.com:StanislavYermolenko/gitops-config.git

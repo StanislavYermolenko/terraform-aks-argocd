@@ -1,0 +1,19 @@
+configs:
+  secret:
+    argocdServerAdminPassword: "$2b$12$SBUdOn2V.wovBJ4WubGTGuXidKCy2xYaVzfjt2U4kyeX2PAQTRn32"  # Argo123!
+
+server:
+  service:
+    type: LoadBalancer
+
+  ingress:
+    enabled: false
+
+controller:
+  replicas: 1
+
+repoServer:
+  replicas: 1
+
+applicationSet:
+  replicas: 1
