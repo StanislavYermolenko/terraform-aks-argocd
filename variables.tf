@@ -58,9 +58,3 @@ variable "subnet_address_prefixes" {
   type        = list(string)
   default     = ["10.240.0.0/16"]
 }
-
-variable "argocd_auth_token" {
-  description = "ArgoCD authentication token"
-  type        = string
-  sensitive   = true
-}

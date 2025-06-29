@@ -7,7 +7,7 @@ resource "kubernetes_namespace" "demo_app" {
     name = "demo-app"
     labels = {
       "app.kubernetes.io/managed-by" = "terraform"
-      "environment" = "demo"
+      "environment"                  = "demo"
     }
     annotations = {
       "description" = "Namespace for demo applications managed by ArgoCD"
@@ -23,7 +23,7 @@ resource "kubernetes_namespace" "nginx_app" {
     name = "nginx-app"
     labels = {
       "app.kubernetes.io/managed-by" = "terraform"
-      "environment" = "demo"
+      "environment"                  = "demo"
     }
     annotations = {
       "description" = "Namespace for nginx applications managed by ArgoCD"
@@ -39,7 +39,7 @@ resource "kubernetes_namespace" "production" {
     name = "production"
     labels = {
       "app.kubernetes.io/managed-by" = "terraform"
-      "environment" = "production"
+      "environment"                  = "production"
     }
     annotations = {
       "description" = "Namespace for production applications"
@@ -55,7 +55,7 @@ resource "kubernetes_namespace" "staging" {
     name = "staging"
     labels = {
       "app.kubernetes.io/managed-by" = "terraform"
-      "environment" = "staging"
+      "environment"                  = "staging"
     }
     annotations = {
       "description" = "Namespace for staging applications"

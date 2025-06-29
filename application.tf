@@ -8,7 +8,7 @@ resource "argocd_application" "root" {
     project = "default"
     source {
       repo_url        = "git@github.com:StanislavYermolenko/gitops-config.git"
-      target_revision = "main"
+      target_revision = "master"
       path            = "root"
     }
 
@@ -26,8 +26,9 @@ resource "argocd_application" "root" {
   }
 
   depends_on = [
-    helm_release.argocd,
+    null_resource.wait_for_argocd,
     kubernetes_namespace.demo_app,
-    kubernetes_namespace.nginx_app
+    kubernetes_namespace.nginx_app,
+    argocd_repository.gitops_config
   ]
 }
