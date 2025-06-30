@@ -1,19 +1,31 @@
-configs:
-  secret:
-    argocdServerAdminPassword: "$2b$12$SBUdOn2V.wovBJ4WubGTGuXidKCy2xYaVzfjt2U4kyeX2PAQTRn32"  
+global:
+  logging:
+    level: info
 
 server:
   service:
     type: LoadBalancer
-
-  ingress:
-    enabled: false
+  extraArgs:
+    - --insecure
+  config:
+    # Disable admin user generation (we'll use Key Vault)
+    admin.enabled: "true"
+  # We'll manage the admin secret separately through Kubernetes secret
+  
+repoServer:
+  replicas: 1
 
 controller:
   replicas: 1
 
-repoServer:
-  replicas: 1
+redis:
+  enabled: true
+
+dex:
+  enabled: false
+
+notifications:
+  enabled: false
 
 applicationSet:
-  replicas: 1
+  enabled: true
