@@ -1,8 +1,83 @@
+# Terraform Files - Core
 *.tfstate
-*.tfstate.backup
+*.tfstate.*
 *.tfplan
-terraform.tfvars
+*.tfplan.*
 .terraform/
 .terraform.lock.hcl
+terraform.tfvars.backup
+*.tfvars.json
+
+# Terraform Variables (potentially sensitive)
+terraform.tfvars
+*.auto.tfvars
+
+# Crash and log files
+crash.log
+crash.*.log
 *.log
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI configuration files
+.terraformrc
+terraform.rc
+
+# SSH Keys and Certificates
+*.pem
+*.key
+id_rsa*
+*.pub
+*.crt
+*.csr
+*.ca-bundle
+*.p7b
+*.p7s
+*.pfx
+*.p12
+
+# Kubernetes and Tools
+kubeconfig
+*.kubeconfig
+.helm/
+argocd-*
+argo-*
+
+# Environment and Secrets
+.env
+.env.local
+.env.*.local
+secrets.yaml
+secrets.yml
+config.json
+credentials.json
+
+# OS and IDE files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Azure CLI
+.azure/
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# Temporary folders
+tmp/
+temp/
