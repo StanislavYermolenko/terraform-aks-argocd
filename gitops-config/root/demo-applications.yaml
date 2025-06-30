@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: docker-image-demo-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:StanislavYermolenko/gitops-config.git
+    targetRevision: master
+    path: apps/docker-image-demo
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo-app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-demo-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:StanislavYermolenko/gitops-config.git
+    targetRevision: master
+    path: apps/nginx-demo
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: nginx-app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
