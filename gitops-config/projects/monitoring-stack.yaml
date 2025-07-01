@@ -30,9 +30,9 @@ spec:
     - group: apiextensions.k8s.io
       kind: CustomResourceDefinition
     - group: admissionregistration.k8s.io
-      kind: ValidatingAdmissionWebhook
+      kind: ValidatingWebhookConfiguration
     - group: admissionregistration.k8s.io
-      kind: MutatingAdmissionWebhook
+      kind: MutatingWebhookConfiguration
 
   namespaceResourceWhitelist: 
     - group: apps               
@@ -67,5 +67,17 @@ spec:
       kind: Prometheus
     - group: monitoring.coreos.com
       kind: Alertmanager
+    - group: monitoring.coreos.com
+      kind: PodMonitor
+    - group: monitoring.coreos.com
+      kind: Probe
+    - group: monitoring.coreos.com
+      kind: PrometheusAgent
+    - group: monitoring.coreos.com
+      kind: ScrapeConfig
+    - group: monitoring.coreos.com
+      kind: ThanosRuler
+    - group: monitoring.coreos.com
+      kind: AlertmanagerConfig
     - group: argoproj.io
       kind: Application
