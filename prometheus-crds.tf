@@ -12,7 +12,7 @@ resource "kubernetes_manifest" "prometheus_crd" {
   }
 
   # Download and apply the CRD from the official Prometheus Operator repository
-  depends_on = [azurerm_kubernetes_cluster.main]
+  depends_on = [azurerm_kubernetes_cluster.aks]
 
   lifecycle {
     ignore_changes = [
@@ -31,7 +31,7 @@ resource "kubernetes_manifest" "prometheusagent_crd" {
     }
   }
 
-  depends_on = [azurerm_kubernetes_cluster.main]
+  depends_on = [azurerm_kubernetes_cluster.aks]
 
   lifecycle {
     ignore_changes = [
@@ -43,12 +43,12 @@ resource "kubernetes_manifest" "prometheusagent_crd" {
 
 # Use kubectl to apply the actual CRD definitions
 resource "null_resource" "install_prometheus_crds" {
-  depends_on = [azurerm_kubernetes_cluster.main]
+  depends_on = [azurerm_kubernetes_cluster.aks]
 
   provisioner "local-exec" {
     command = <<-EOT
       # Set kubeconfig context
-      az aks get-credentials --resource-group ${azurerm_resource_group.main.name} --name ${azurerm_kubernetes_cluster.main.name} --overwrite-existing
+      az aks get-credentials --resource-group ${azurerm_resource_group.aks_rg.name} --name ${azurerm_kubernetes_cluster.aks.name} --overwrite-existing
 
       # Install core Prometheus CRDs that have annotation size issues in Helm charts
       kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.68.0/example/prometheus-operator-crd/monitoring.coreos.com_prometheuses.yaml || true
@@ -61,7 +61,7 @@ resource "null_resource" "install_prometheus_crds" {
 
   # Trigger re-run if CRDs are missing
   triggers = {
-    cluster_id = azurerm_kubernetes_cluster.main.id
+    cluster_id = azurerm_kubernetes_cluster.aks.id
     timestamp  = timestamp()
   }
 }
