@@ -22,3 +22,9 @@ resource "kubernetes_namespace" "nginx_app" {
     name = "nginx-app"
   }
 }
+
+resource "kubernetes_namespace" "monitoring" {
+  metadata {
+    name = "monitoring"
+  }
+}

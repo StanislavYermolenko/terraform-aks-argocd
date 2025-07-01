@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring-stack
+  namespace: argocd
+spec:
+  project: monitoring-stack
+  source:
+    repoURL: git@github.com:StanislavYermolenko/terraform-aks-argocd.git
+    targetRevision: HEAD
+    path: gitops-config/apps
+    directory:
+      include: "{prometheus,grafana,loki,promtail}.yaml"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true

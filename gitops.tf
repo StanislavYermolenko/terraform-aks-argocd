@@ -41,6 +41,7 @@ resource "null_resource" "gitops_instructions" {
     kubernetes_namespace.nginx_app,
     kubernetes_namespace.staging,
     kubernetes_namespace.production,
+    kubernetes_namespace.monitoring,
     azurerm_key_vault_secret.ssh_private_key
   ]
 }

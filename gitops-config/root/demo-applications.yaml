@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:StanislavYermolenko/gitops-config.git
-    targetRevision: master
-    path: apps/docker-image-demo
+    repoURL: git@github.com:StanislavYermolenko/terraform-aks-argocd.git
+    targetRevision: HEAD
+    path: gitops-config/apps/docker-image-demo
   destination:
     server: https://kubernetes.default.svc
     namespace: demo-app
@@ -25,9 +25,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:StanislavYermolenko/gitops-config.git
-    targetRevision: master
-    path: apps/nginx-demo
+    repoURL: git@github.com:StanislavYermolenko/terraform-aks-argocd.git
+    targetRevision: HEAD
+    path: gitops-config/apps/nginx-demo
   destination:
     server: https://kubernetes.default.svc
     namespace: nginx-app
