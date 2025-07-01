@@ -12,25 +12,36 @@ spec:
     helm:
       values: |
         fullnameOverride: prometheus
+        # Global settings to avoid complex configurations
+        global:
+          imageRegistry: ""
         # Disable CRDs since we install them via Terraform (prometheus-crds.tf)
         # This avoids annotation size issues with the Helm chart CRDs
         crds:
           enabled: false
-        # Disable components that might cause issues
+        # Configure prometheus operator to avoid deployment issues
         prometheusOperator:
           admissionWebhooks:
             enabled: false
-          # Explicitly disable thanos to avoid parsing issues
-          containerSecurityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            readOnlyRootFilesystem: true
-          # Disable thanos default base image to avoid argument parsing issues
+          # Clean security context configuration
+          securityContext:
+            fsGroup: 65534
+            runAsGroup: 65534
+            runAsNonRoot: true
+            runAsUser: 65534
+          # Avoid complex container args that cause parsing issues
+          image:
+            tag: v0.66.0
+          # Use simple environment variables
           env:
             - name: GOGC
               value: "30"
+          # Explicitly disable components that might cause argument issues
+          prometheusConfigReloader:
+            image:
+              tag: v0.66.0
+          configReloaderCpu: 100m
+          configReloaderMemory: 50Mi
         prometheus:
           prometheusSpec:
             retention: 7d
