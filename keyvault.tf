@@ -45,7 +45,7 @@ resource "azurerm_key_vault" "main" {
 # Store SSH private key in Key Vault (for GitOps repository access)
 resource "azurerm_key_vault_secret" "ssh_private_key" {
   name         = "gitops-ssh-private-key"
-  value        = file("~/.ssh/id_rsa")
+  value        = file("~/.ssh/id_ed25519_anonymous")
   key_vault_id = azurerm_key_vault.main.id
 
   tags = {

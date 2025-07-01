@@ -179,7 +179,7 @@ resource "null_resource" "gitops_setup_v2" {
         
         # Add repository
         echo "Adding Git repository..."
-        if argocd repo add git@github.com:StanislavYermolenko/gitops-config.git --ssh-private-key-path /tmp/gitops_key; then
+        if argocd repo add git@github.com:StanislavYermolenko/terraform-aks-argocd.git --ssh-private-key-path /tmp/gitops_key; then
           echo "✅ Repository added successfully!"
         else
           echo "⚠️  Repository might already exist"
@@ -188,8 +188,8 @@ resource "null_resource" "gitops_setup_v2" {
         # Create root application
         echo "Creating root application..."
         if argocd app create root \
-          --repo git@github.com:StanislavYermolenko/gitops-config.git \
-          --path root \
+          --repo git@github.com:StanislavYermolenko/terraform-aks-argocd.git \
+          --path gitops-config/root \
           --dest-server https://kubernetes.default.svc \
           --dest-namespace argocd \
           --sync-policy automated \

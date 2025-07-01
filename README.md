@@ -66,6 +66,10 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
 # Login to Azure
 az login
+
+# Set your Azure subscription ID
+export ARM_SUBSCRIPTION_ID="$(az account show --query id -o tsv)"
+# Or manually: export ARM_SUBSCRIPTION_ID="your-subscription-id-here"
 ```
 
 ## 🚀 Quick Start
@@ -81,6 +85,9 @@ vi terraform.tfvars
 
 ### 2. Deploy Infrastructure
 ```bash
+# Set Azure subscription ID (required)
+export ARM_SUBSCRIPTION_ID="$(az account show --query id -o tsv)"
+
 # Initialize Terraform
 terraform init
 
