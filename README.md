@@ -1,119 +1,123 @@
-# AKS + ArgoCD + GitOps Infrastructure as Code
+# AKS + ArgoCD + Monitoring Stack
 
-A fully automated, secure, and modular Infrastructure as Code (IaC) solution for deploying Azure Kubernetes Service (AKS), ArgoCD, and GitOps workflows on Azure using Terraform with Azure Key Vault (AKV) for comprehensive secret management.
+Production-ready Infrastructure as Code solution deploying Azure Kubernetes Service with ArgoCD GitOps and a complete monitoring stack (Prometheus, Grafana, Loki, Promtail).
 
-## 🚀 Features
+## 🚀 What Gets Deployed
 
-- **Fully Automated**: Zero manual steps required for deployment
-- **Secure by Design**: All secrets managed in Azure Key Vault
-- **Modular Architecture**: Clean separation of concerns across multiple Terraform files
-- **GitOps Ready**: Automated ArgoCD setup with repository and application configuration
-- **Production Ready**: Includes networking, RBAC, and proper resource management
-- **Reproducible**: Validated through multiple deploy/destroy cycles
+- **AKS Cluster** with Azure Key Vault integration
+- **ArgoCD** for GitOps workflow management
+- **Complete Monitoring Stack**:
+  - Prometheus (metrics collection)
+  - Grafana (visualization with LoadBalancer)
+  - Alertmanager (alerting)
+  - Loki (log aggregation)
+  - Promtail (log collection)
+  - Node Exporter & Kube State Metrics
+- **Demo Applications** (nginx, docker-image demos)
 
 ## 🏗️ Architecture
 
 ```
-Azure Resource Group
-├── Virtual Network (10.0.0.0/8)
-│   └── AKS Subnet (10.240.0.0/16)
-├── AKS Cluster (1 node, Standard_DS2_v2)
-├── Azure Key Vault
-│   ├── ArgoCD Admin Password
-│   └── GitOps SSH Private Key
-└── ArgoCD (Helm Chart)
-    ├── LoadBalancer Service
-    ├── Automated GitOps Setup
-    └── Application Sync
+Azure Infrastructure (Terraform)
+├── AKS Cluster + Key Vault + Networking
+├── Prometheus CRDs (automated installation)
+└── ArgoCD Installation
+
+GitOps Applications (ArgoCD)
+├── monitoring-stack project
+│   ├── prometheus (metrics)
+│   ├── grafana (dashboards) 
+│   ├── loki (logs)
+│   └── promtail (log collection)
+└── default project
+    ├── docker-image-demo
+    └── nginx-demo
 ```
 
-## 📁 File Structure
+## 📁 Key Files
 
-This project uses a **modular Terraform structure** following enterprise best practices:
-
-| File | Purpose | Description |
-|------|---------|-------------|
-| `terraform.tf` | **Core Configuration** | Terraform version constraints and required providers |
-| `providers.tf` | **Provider Setup** | Azure, Kubernetes, and Helm provider configurations |
-| `variables.tf` | **Input Variables** | Configurable parameters for the deployment |
-| `infrastructure.tf` | **Azure Infrastructure** | Resource group, VNet, subnet, and AKS cluster |
-| `keyvault.tf` | **Secret Management** | Azure Key Vault and secure secret storage |
-| `kubernetes.tf` | **K8s Resources** | Kubernetes namespaces and basic resources |
-| `argocd.tf` | **ArgoCD & Automation** | ArgoCD Helm installation and automated GitOps setup |
-| `prometheus-crds.tf` | **Monitoring CRDs** | Prometheus Operator CRDs installation |
-| `gitops.tf` | **GitOps Instructions** | Backup manual setup instructions for reference |
-| `outputs.tf` | **Output Values** | Access information and connection details |
-| `argocd-values.yaml` | **ArgoCD Config** | Helm values for ArgoCD customization |
-| `gitops-config/` | **GitOps Applications** | ArgoCD applications using App-of-Apps pattern |
+| File | Purpose |
+|------|---------|
+| `main.tf` | AKS cluster and core infrastructure |
+| `keyvault.tf` | Azure Key Vault for secrets |
+| `prometheus-crds.tf` | **Automated CRD installation** |
+| `argocd.tf` | ArgoCD installation and GitOps setup |
+| `gitops-config/apps/` | **Monitoring applications** |
+| `gitops-config/projects/` | ArgoCD projects and RBAC |
 
 ## 🛠️ Prerequisites
 
-- Azure CLI installed and authenticated
+- Azure CLI: `curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash`
 - Terraform >= 1.0
-- kubectl (for Kubernetes access, optional for troubleshooting)
+- Azure subscription with contributor access
+
+## 🚀 Quick Deployment
 
 ```bash
-# Install Azure CLI
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-
-# Install Terraform
-wget https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
-unzip terraform_1.6.0_linux_amd64.zip
-sudo mv terraform /usr/local/bin/
-
-# Install kubectl (optional, for troubleshooting)
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-
-# Login to Azure
-az login
-
-# Set your Azure subscription ID
-export ARM_SUBSCRIPTION_ID="$(az account show --query id -o tsv)"
-# Or manually: export ARM_SUBSCRIPTION_ID="your-subscription-id-here"
-```
-
-## 🚀 Quick Start
-
-### 1. Clone and Configure
-```bash
+# 1. Clone repository
 git clone https://github.com/StanislavYermolenko/terraform-aks-argocd.git
 cd terraform-aks-argocd
 
-# Review and modify variables if needed
-vi terraform.tfvars
-```
-
-### 2. Deploy Infrastructure
-```bash
-# Set Azure subscription ID (required)
+# 2. Azure authentication
+az login
 export ARM_SUBSCRIPTION_ID="$(az account show --query id -o tsv)"
 
-# Initialize Terraform
+# 3. Deploy everything
 terraform init
-
-# Review the deployment plan
-terraform plan
-
-# Deploy infrastructure
 terraform apply
 ```
 
-### 3. Access ArgoCD
+**That's it!** The entire infrastructure deploys automatically.
+
+## � Access Your Stack
+
+### **ArgoCD Dashboard**
 ```bash
-# Get connection information
-terraform output
+# Get external IP
+kubectl get svc argocd-server -n argocd
 
-# Get ArgoCD password
-az keyvault secret show --vault-name <key-vault-name> --name argocd-initial-admin-password --query value -o tsv
-
-# Configure kubectl
-az aks get-credentials --resource-group my-aks-rg --name my-aks-cluster
-
-# Access ArgoCD UI at the provided URL
+# Get admin password  
+az keyvault secret show --vault-name <vault-name> --name argocd-initial-admin-password --query value -o tsv
 ```
 
-## 🔐 Security Features
+### **Grafana Dashboard** 
+```bash
+# Get Grafana LoadBalancer IP
+kubectl get svc grafana -n monitoring
+
+# Login: admin / admin123
+# Data sources: Prometheus + Loki (pre-configured)
+```
+
+### **View Logs in Grafana**
+1. Go to **Explore** → Select **Loki** data source
+2. Try these queries:
+   ```logql
+   {namespace="monitoring"}              # All monitoring logs
+   {namespace="monitoring"} |= "error"   # Error logs only
+   {pod=~"prometheus.*"}                 # Prometheus pod logs
+   ```
+
+## 🎯 What's Automated
+
+✅ **Infrastructure**: AKS + Key Vault + Networking  
+✅ **CRDs**: Prometheus Operator CRDs (avoids Helm issues)  
+✅ **ArgoCD**: Installed and configured with GitOps  
+✅ **Monitoring**: Complete stack with persistent storage  
+✅ **Data Sources**: Grafana pre-configured with Prometheus + Loki  
+✅ **Applications**: Demo apps deployed via GitOps
+
+## 🔧 Customization
+
+Modify `terraform.tfvars` to customize resource names, regions, and sizing.
+
+Edit `gitops-config/apps/*.yaml` to modify monitoring stack configuration.
+
+## 🗑️ Cleanup
+
+```bash
+terraform destroy
+```
 
 - **Azure Key Vault Integration**: All secrets stored securely
 - **No Hardcoded Credentials**: Dynamic secret generation

@@ -20,8 +20,17 @@ spec:
         prometheusOperator:
           admissionWebhooks:
             enabled: false
-          thanosImage:
-            tag: ""
+          # Explicitly disable thanos to avoid parsing issues
+          containerSecurityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          # Disable thanos default base image to avoid argument parsing issues
+          env:
+            - name: GOGC
+              value: "30"
         prometheus:
           prometheusSpec:
             retention: 7d
