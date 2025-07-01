@@ -40,6 +40,7 @@ This project uses a **modular Terraform structure** following enterprise best pr
 | `keyvault.tf` | **Secret Management** | Azure Key Vault and secure secret storage |
 | `kubernetes.tf` | **K8s Resources** | Kubernetes namespaces and basic resources |
 | `argocd.tf` | **ArgoCD & Automation** | ArgoCD Helm installation and automated GitOps setup |
+| `prometheus-crds.tf` | **Monitoring CRDs** | Prometheus Operator CRDs installation |
 | `gitops.tf` | **GitOps Instructions** | Backup manual setup instructions for reference |
 | `outputs.tf` | **Output Values** | Access information and connection details |
 | `argocd-values.yaml` | **ArgoCD Config** | Helm values for ArgoCD customization |
@@ -167,7 +168,46 @@ Modify `argocd-values.yaml` to customize:
 - Feature enablement
 - Security settings
 
-## 🗑️ Cleanup
+## � Monitoring Stack
+
+The solution includes a complete observability stack deployed via GitOps:
+
+### **Components Deployed**
+- **Prometheus**: Metrics collection and time-series database
+- **Alertmanager**: Alert routing and management
+- **Grafana**: Visualization and dashboarding with LoadBalancer access
+- **Loki**: Log aggregation and storage
+- **Promtail**: Log collection from all cluster nodes
+- **Node Exporter**: Node-level metrics
+- **Kube State Metrics**: Kubernetes cluster metrics
+
+### **Automated Configuration**
+- **Pre-configured Data Sources**: Prometheus and Loki automatically connected to Grafana
+- **Persistent Storage**: All stateful components use Azure managed-csi storage
+- **GitOps Managed**: All monitoring components deployed and managed via ArgoCD
+- **RBAC Compliant**: Proper permissions and security contexts
+
+### **Access Points**
+```bash
+# Access Grafana (admin/admin123)
+kubectl get svc grafana -n monitoring
+
+# Access Prometheus (internal)
+kubectl port-forward svc/prometheus-prometheus -n monitoring 9090:9090
+
+# Access ArgoCD to manage monitoring apps
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+
+### **Custom Resource Definitions (CRDs)**
+The `prometheus-crds.tf` file automatically installs required Prometheus Operator CRDs to avoid Helm chart annotation size issues:
+- `prometheuses.monitoring.coreos.com`
+- `prometheusagents.monitoring.coreos.com`  
+- `alertmanagers.monitoring.coreos.com`
+- `servicemonitors.monitoring.coreos.com`
+- `prometheusrules.monitoring.coreos.com`
+
+## �🗑️ Cleanup
 
 ```bash
 # Destroy all resources

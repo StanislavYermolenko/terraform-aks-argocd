@@ -12,7 +12,8 @@ spec:
     helm:
       values: |
         fullnameOverride: prometheus
-        # Disable CRDs since we install them manually
+        # Disable CRDs since we install them via Terraform (prometheus-crds.tf)
+        # This avoids annotation size issues with the Helm chart CRDs
         crds:
           enabled: false
         # Disable components that might cause issues
