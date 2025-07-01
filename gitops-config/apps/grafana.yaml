@@ -34,16 +34,22 @@ spec:
                 access: proxy
                 url: http://loki.monitoring.svc.cluster.local:3100
                 isDefault: false
+        # Dashboard provisioning for monitoring
         dashboardProviders:
           dashboardproviders.yaml:
             apiVersion: 1
             providers:
-              - name: default
+              - name: 'default'
                 orgId: 1
-                folder: ""
+                folder: ''
                 type: file
+                disableDeletion: false
+                editable: true
                 options:
                   path: /var/lib/grafana/dashboards/default
+        # Pre-installed dashboards  
+        dashboards:
+          default:
         env:
           GF_AUTH_ANONYMOUS_ENABLED: "true"
           GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
