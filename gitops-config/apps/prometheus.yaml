@@ -8,10 +8,16 @@ spec:
   source:
     repoURL: https://prometheus-community.github.io/helm-charts
     chart: kube-prometheus-stack
-    targetRevision: 58.0.0
+    targetRevision: 55.8.3
     helm:
       values: |
         fullnameOverride: prometheus
+        # Disable components that might cause CRD issues
+        prometheusOperator:
+          admissionWebhooks:
+            enabled: false
+          thanosImage:
+            tag: ""
         prometheus:
           prometheusSpec:
             retention: 7d
