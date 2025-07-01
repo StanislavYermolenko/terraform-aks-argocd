@@ -63,3 +63,5 @@ spec:
       kind: Prometheus
     - group: monitoring.coreos.com
       kind: Alertmanager
+    - group: argoproj.io
+      kind: Application
