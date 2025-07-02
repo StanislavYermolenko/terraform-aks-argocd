@@ -10,7 +10,7 @@ spec:
     targetRevision: HEAD
     path: gitops-config/apps
     directory:
-      include: "{monitoring-secrets,prometheus,grafana,loki,promtail}.yaml"
+      include: "{prometheus,grafana,loki,promtail}.yaml"
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

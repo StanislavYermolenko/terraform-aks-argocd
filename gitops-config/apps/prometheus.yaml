@@ -19,23 +19,22 @@ spec:
         # This avoids annotation size issues with the Helm chart CRDs
         crds:
           enabled: false
-        # Configure prometheus operator to avoid deployment issues
+        # Configure prometheus operator with clean production settings
+        # This approach properly disables admission webhooks and TLS certificate mounting
+        # eliminating the need for stub secrets or complex certificate management
         prometheusOperator:
           admissionWebhooks:
             enabled: false
-            # Ensure no TLS-related secrets are mounted
             patch:
               enabled: false
-            # Disable admission webhooks completely
             failurePolicy: Ignore
           # Completely disable TLS and certificate mounting
           tls:
             enabled: false
-          # Disable TLS web interface to avoid cert mounting
-          tlsProxy:
-            enabled: false
-          # Override container args to disable TLS completely
-          containerArgs:
+          # Don't mount any certificate secrets
+          secretName: ""
+          # Clean container args without TLS requirements
+          extraArgs:
             - --kubelet-service=kube-system/prometheus-kubelet
             - --localhost=127.0.0.1
             - --prometheus-config-reloader=quay.io/prometheus-operator/prometheus-config-reloader:v0.66.0
@@ -47,7 +46,6 @@ spec:
             - --secret-field-selector=type!=kubernetes.io/dockercfg,type!=kubernetes.io/service-account-token,type!=helm.sh/release.v1
             - --web.enable-tls=false
             - --web.listen-address=:10250
-          # Explicitly disable volumes that mount secrets
           volumes: []
           volumeMounts: []
           # Clean security context configuration
