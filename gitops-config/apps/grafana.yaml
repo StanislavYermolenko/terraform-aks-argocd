@@ -47,34 +47,6 @@ spec:
                 editable: true
                 options:
                   path: /var/lib/grafana/dashboards/default
-        # Pre-installed dashboards  
-        # dashboards:
-        #   default:
-        #     # Kubernetes Cluster Overview Dashboard
-        #     kubernetes-cluster:
-        #       gnetId: 7249
-        #       revision: 1
-        #       datasource: Prometheus
-        #     # Node Exporter Full Dashboard
-        #     node-exporter:
-        #       gnetId: 1860
-        #       revision: 31
-        #       datasource: Prometheus
-        #     # Kubernetes Pod Overview
-        #     kubernetes-pods:
-        #       gnetId: 6417
-        #       revision: 1
-        #       datasource: Prometheus
-        #     # Prometheus Stats Dashboard
-        #     prometheus-stats:
-        #       gnetId: 2
-        #       revision: 2
-        #       datasource: Prometheus
-        # env:
-        #   GF_AUTH_ANONYMOUS_ENABLED: "true"
-        #   GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
-        #   # Set default home dashboard
-        #   GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/default/kubernetes-cluster.json"
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
