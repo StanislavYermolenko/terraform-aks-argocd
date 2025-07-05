@@ -54,3 +54,49 @@ resource "azurerm_key_vault_secret" "ssh_private_key" {
 
   depends_on = [azurerm_key_vault.main]
 }
+
+resource "azuread_application" "eso" {
+  display_name = "aks-eso-identity"
+}
+
+resource "azuread_service_principal" "eso" {
+  application_id = azuread_application.eso.application_id
+}
+
+resource "azuread_application_federated_identity_credential" "eso" {
+  application_object_id = azuread_application.eso.object_id
+  display_name          = "eso-federated-cred"
+  description           = "Federated identity for ESO in jenkins namespace"
+  audiences             = ["api://AzureADTokenExchange"]
+  issuer                = azurerm_kubernetes_cluster.aks.oidc_issuer_url
+  subject               = "system:serviceaccount:jenkins:external-secrets-sa"
+}
+
+resource "azurerm_role_assignment" "eso_kv_access" {
+  scope                = azurerm_key_vault.main.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azuread_service_principal.eso.id
+}
+
+variable "github_username" {
+  description = "GitHub username for CI/CD integration"
+  type        = string
+}
+
+variable "github_token" {
+  description = "GitHub token for CI/CD integration"
+  type        = string
+  sensitive   = true
+}
+
+resource "azurerm_key_vault_secret" "github_username" {
+  name         = "github-username"
+  value        = var.github_username
+  key_vault_id = azurerm_key_vault.main.id
+}
+
+resource "azurerm_key_vault_secret" "github_token" {
+  name         = "github-token"
+  value        = var.github_token
+  key_vault_id = azurerm_key_vault.main.id
+}

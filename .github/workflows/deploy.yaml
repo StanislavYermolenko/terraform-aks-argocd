@@ -1,0 +1,52 @@
+name: Deploy to AKS
+
+description: |
+  This workflow substitutes Azure Key Vault and subscription secrets into your manifests and applies them to your AKS cluster after every push to master.
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set ARM_SUBSCRIPTION_ID
+        run: echo "ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)" >> $GITHUB_ENV
+
+      - name: Substitute Azure Key Vault secrets
+        run: |
+          sed -i "s|<AZURE_TENANT_ID>|${{ secrets.AZURE_TENANT_ID }}|g" terraform-aks-argocd/gitops-config/manifests/jenkins/azure-keyvault-secretstore.yaml
+          sed -i "s|<AZURE_KEYVAULT_URL>|${{ secrets.AZURE_KEYVAULT_URL }}|g" terraform-aks-argocd/gitops-config/manifests/jenkins/azure-keyvault-secretstore.yaml
+
+      - name: Substitute GitHub token
+        run: |
+          sed -i "s|<GH_TOKEN>|${{ secrets.GH_TOKEN }}|g" terraform-aks-argocd/gitops-config/manifests/jenkins/azure-keyvault-secretstore.yaml
+
+      - name: Substitute GitHub username
+        run: |
+          sed -i "s|<GH_USERNAME>|${{ secrets.GH_USERNAME }}|g" terraform-aks-argocd/gitops-config/manifests/jenkins/azure-keyvault-secretstore.yaml
+
+      # Uncomment and edit the next step if you need to substitute ARM_SUBSCRIPTION_ID in any file
+      # - name: Substitute ARM_SUBSCRIPTION_ID
+      #   run: sed -i "s|<ARM_SUBSCRIPTION_ID>|${{ env.ARM_SUBSCRIPTION_ID }}|g" path/to/your/file.yaml
+
+      - name: Set up kubectl
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          cluster-name: ${{ secrets.AZURE_AKS_CLUSTER }}
+
+      - name: Apply manifests
+        run: kubectl apply -f terraform-aks-argocd/gitops-config/manifests/jenkins/azure-keyvault-secretstore.yaml

@@ -5,7 +5,7 @@ pipeline {
     }
     environment {
         REGISTRY = "ghcr.io/stanislavyermolenko/terraform-aks-argocd"
-        IMAGE_TAG = "latest"
+        IMAGE_TAG = "jenkins-podman-agent:inbound-agent3206"
         PODMAN_USER = credentials('GITHUB_USERNAME')
         PODMAN_PASS = credentials('GITHUB_TOKEN')
     }
