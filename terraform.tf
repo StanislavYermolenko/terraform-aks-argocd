@@ -22,5 +22,13 @@ terraform {
       source  = "hashicorp/null"
       version = "~> 3.0"
     }
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = ">= 2.47.0"
+    }
+    template = {
+      source  = "hashicorp/template"
+      version = ">= 2.2.0"
+    }
   }
 }

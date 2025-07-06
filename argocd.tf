@@ -103,7 +103,7 @@ locals {
   argocd_ready = local.argocd_ip != "" && local.argocd_password != "" && length(local.argocd_password) > 0
   
   # Validated server address (only available after validation passes)
-  argocd_server_validated = local.argocd_ready ? "${local.argocd_ip}:80" : null
+  # argocd_server_validated = local.argocd_ready ? "${local.argocd_ip}:80" : null
 }
 
 # Extra safety: Null resource to validate ArgoCD readiness
