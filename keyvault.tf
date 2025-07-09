@@ -60,16 +60,16 @@ resource "azuread_application" "eso" {
 }
 
 resource "azuread_service_principal" "eso" {
-  application_id = azuread_application.eso.application_id
+  client_id = azuread_application.eso.client_id
 }
 
 resource "azuread_application_federated_identity_credential" "eso" {
-  application_object_id = azuread_application.eso.object_id
-  display_name          = "eso-federated-cred"
-  description           = "Federated identity for ESO in jenkins namespace"
-  audiences             = ["api://AzureADTokenExchange"]
-  issuer                = azurerm_kubernetes_cluster.aks.oidc_issuer_url
-  subject               = "system:serviceaccount:jenkins:external-secrets-sa"
+  application_id = azuread_application.eso.id
+  display_name   = "eso-federated-cred"
+  description    = "Federated identity for ESO in jenkins namespace"
+  audiences      = ["api://AzureADTokenExchange"]
+  issuer         = azurerm_kubernetes_cluster.aks.oidc_issuer_url
+  subject        = "system:serviceaccount:jenkins:external-secrets-sa"
 }
 
 resource "azurerm_role_assignment" "eso_kv_access" {

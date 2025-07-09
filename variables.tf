@@ -63,3 +63,9 @@ variable "environment" {
   type        = string
   default     = "dev"
 }
+
+variable "tenant_id" {
+  description = "Azure Tenant ID"
+  type        = string
+}
+

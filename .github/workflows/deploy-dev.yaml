@@ -1,0 +1,51 @@
+name: Deploy to AKS (dev)
+
+description: |
+  This workflow deploys to the dev AKS environment after every push to the jenkins branch.
+
+on:
+  push:
+    branches:
+      - jenkins
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set ARM_SUBSCRIPTION_ID
+        run: echo "ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)" >> $GITHUB_ENV
+
+      - name: Substitute Azure Key Vault secrets
+        run: |
+          sed -i "s|<AZURE_TENANT_ID>|${{ secrets.AZURE_TENANT_ID }}|g" terraform-aks-argocd/gitops-config/manifests/jenkins/azure-keyvault-secretstore.yaml
+          sed -i "s|<AZURE_KEYVAULT_URL>|${{ secrets.AZURE_KEYVAULT_URL }}|g" terraform-aks-argocd/gitops-config/manifests/jenkins/azure-keyvault-secretstore.yaml
+
+      - name: Substitute GitHub token
+        run: |
+          sed -i "s|<GH_TOKEN>|${{ secrets.GH_TOKEN }}|g" terraform-aks-argocd/gitops-config/manifests/jenkins/azure-keyvault-secretstore.yaml
+
+      - name: Substitute GitHub username
+        run: |
+          sed -i "s|<GH_USERNAME>|${{ secrets.GH_USERNAME }}|g" terraform-aks-argocd/gitops-config/manifests/jenkins/azure-keyvault-secretstore.yaml
+
+      - name: Set up kubectl
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          cluster-name: ${{ secrets.AZURE_AKS_CLUSTER }}
+
+      - name: Apply manifests
+        run: kubectl apply -f terraform-aks-argocd/gitops-config/manifests/jenkins/azure-keyvault-secretstore.yaml
+
+      - name: Clean up manifest with secrets
+        run: rm -f terraform-aks-argocd/gitops-config/manifests/jenkins/azure-keyvault-secretstore.yaml
